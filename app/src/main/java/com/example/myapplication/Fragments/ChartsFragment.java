@@ -28,7 +28,7 @@ public class ChartsFragment extends Fragment {
     }
 
     FragmentChartsBinding binding;
-    ArrayList<Users> list =new ArrayList<>();
+    ArrayList<Users> list = new ArrayList<>();
     FirebaseDatabase database;
 
     @Override
@@ -36,13 +36,13 @@ public class ChartsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        binding=FragmentChartsBinding.inflate(inflater,container,false);
-        database=FirebaseDatabase.getInstance();
+        binding = FragmentChartsBinding.inflate(inflater, container, false);
+        database = FirebaseDatabase.getInstance();
 
 
-        UsersAdapter adapter=new UsersAdapter(list,getContext());
+        UsersAdapter adapter = new UsersAdapter(list, getContext());
         binding.ChartRecyclerView.setAdapter(adapter);
-        LinearLayoutManager layoutManager =new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         binding.ChartRecyclerView.setLayoutManager(layoutManager);
 
 
@@ -51,10 +51,10 @@ public class ChartsFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 list.clear();
-                for (DataSnapshot dataSnapshot:snapshot.getChildren()){
-                    Users users=dataSnapshot.getValue((Users.class));
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Users users = dataSnapshot.getValue((Users.class));
                     users.setUserId(dataSnapshot.getKey());
-                    if (!users.getUserId().equals(FirebaseAuth.getInstance().getUid())){
+                    if (!users.getUserId().equals(FirebaseAuth.getInstance().getUid())) {
                         list.add(users);
                     }
 
@@ -69,7 +69,6 @@ public class ChartsFragment extends Fragment {
 
             }
         });
-
 
 
         return binding.getRoot();

@@ -23,9 +23,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>  {
+public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> {
 
-    ArrayList<Users>list;
+    ArrayList<Users> list;
     Context context;
 
     public UsersAdapter(ArrayList<Users> list, Context context) {
@@ -36,25 +36,25 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(context).inflate(R.layout.sample_show_user,parent,false);
-        return  new ViewHolder(view);
+        View view = LayoutInflater.from(context).inflate(R.layout.sample_show_user, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Users users=list.get(position);
-        Picasso.get().load(users.getProfilePic()).placeholder(R.drawable.avatar3).into(holder.image);
+        Users users = list.get(position);
+        Picasso.get().load(users.getProfilePic()).placeholder(R.drawable.baseline_people_24).into(holder.image);
         holder.userName.setText(users.getUserName());
 
         FirebaseDatabase.getInstance().getReference().child("chats")
-                .child(FirebaseAuth.getInstance().getUid()+users.getUserId())
+                .child(FirebaseAuth.getInstance().getUid() + users.getUserId())
                 .orderByChild("timestamp")
                 .limitToLast(1)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.hasChildren()){
-                            for (DataSnapshot snapshot1:snapshot.getChildren()){
+                        if (snapshot.hasChildren()) {
+                            for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                                 holder.lastMessage.setText(snapshot1.child("message").getValue().toString());
                             }
                         }
@@ -70,11 +70,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(context, ChartDetailActivity.class);
-                intent.putExtra("userId",users.getUserId());
-                intent.putExtra("profilePic",users.getProfilePic());
-                intent.putExtra("userName",users.getUserName());
-                        context.startActivity(intent);
+                Intent intent = new Intent(context, ChartDetailActivity.class);
+                intent.putExtra("userId", users.getUserId());
+                intent.putExtra("profilePic", users.getProfilePic());
+                intent.putExtra("userName", users.getUserName());
+                context.startActivity(intent);
 
 
             }
@@ -86,15 +86,15 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         return list.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
-        TextView userName,lastMessage;
+        TextView userName, lastMessage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            image=itemView.findViewById(R.id.profile_image);
-            userName=itemView.findViewById(R.id.userNameList);
-            lastMessage=itemView.findViewById(R.id.lastMessage);
+            image = itemView.findViewById(R.id.profile_image);
+            userName = itemView.findViewById(R.id.userNameList);
+            lastMessage = itemView.findViewById(R.id.lastMessage);
 
         }
     }

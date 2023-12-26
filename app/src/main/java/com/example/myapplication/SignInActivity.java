@@ -32,22 +32,15 @@ public class SignInActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     FirebaseAuth mAuth;
     FirebaseDatabase firebaseDatabase;
-
     GoogleSignInClient mGoogleSignINClient;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivitySignInBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-
         getSupportActionBar().hide();
-
-
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
-
         progressDialog = new ProgressDialog(SignInActivity.this);
         progressDialog.setTitle("Login");
         progressDialog.setMessage("Validation In Progress");
@@ -60,33 +53,11 @@ public class SignInActivity extends AppCompatActivity {
         binding.btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!binding.txtEmail.getText().toString().isEmpty() && !binding.txtPassword.getText().toString().isEmpty()) {
-                    progressDialog.show();
-                    mAuth.signInWithEmailAndPassword(binding.txtEmail.getText().toString(), binding.txtPassword.getText().toString())
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-
-                                    progressDialog.dismiss();
-                                    if (task.isSuccessful()) {
-                                        Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                    } else {
-                                        Toast.makeText(SignInActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-
-                                }
-                            });
-
-                } else {
-                    Toast.makeText(SignInActivity.this, "Enter Credentials", Toast.LENGTH_SHORT).show();
-                }
-
+                performSignin();
             }
         });
-        if(mAuth.getCurrentUser()!=null)
-        {
-            Intent intent=new Intent(SignInActivity.this,MainActivity.class);
+        if (mAuth.getCurrentUser() != null) {
+            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
             startActivity(intent);
 
         }
@@ -98,79 +69,34 @@ public class SignInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        binding.btnGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-
-            }
-        });
-
-
-        binding.btnFacebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(SignInActivity.this, "Try with Email and Password or SignIn with Google", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
     }
 
+    /**
+     * Perform the sign-in process using the provided email and password.
+     *
+     */
+    private void performSignin() {
+        if (!binding.txtEmail.getText().toString().isEmpty() && !binding.txtPassword.getText().toString().isEmpty()) {
+            progressDialog.show();
+            mAuth.signInWithEmailAndPassword(binding.txtEmail.getText().toString(), binding.txtPassword.getText().toString())
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
 
-    //google
-    int RC_SIGN_IN = 35;
+                            progressDialog.dismiss();
+                            if (task.isSuccessful()) {
+                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(SignInActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
 
-    private void signIn() {
-        Intent signInIntent = mGoogleSignINClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
+                        }
+                    });
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-
-            Task<GoogleSignInAccount> task = GoogleSignIn
-                    .getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d("TAG", "firebasedAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                Log.w("TAG", "Google sign in failed", e);
-            }
+        } else {
+            Toast.makeText(SignInActivity.this, "Enter Credentials", Toast.LENGTH_SHORT).show();
         }
-
     }
-
-    private  void firebaseAuthWithGoogle(String idToken){
-        AuthCredential credential= GoogleAuthProvider.getCredential(idToken,null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            Log.d("TAG","signInWithCredential:success");
-                            FirebaseUser user= mAuth.getCurrentUser();
-
-                            Users users= new Users();
-                            users.setUserId(user.getUid());
-                            users.setUserName(user.getDisplayName());
-                            users.setProfilePic(user.getPhotoUrl().toString());
-                            firebaseDatabase.getReference().child("Users").child(user.getUid()).setValue(users);
-
-                            Intent intent=new Intent(SignInActivity.this,MainActivity.class);
-                            startActivity(intent);
-                            Toast.makeText(SignInActivity.this, "Sign in With Google", Toast.LENGTH_SHORT).show();
-                        }
-                        else{
-                            Log.w("TAG","signInWithCredential:Failur",task.getException());
-                        }
-                    }
-                });
-    }
-
 }
 

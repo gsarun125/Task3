@@ -28,75 +28,70 @@ public class ChartDetailActivity extends AppCompatActivity {
     FirebaseDatabase database;
     FirebaseAuth auth;
 
-
-
-
+    public static String userName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding=ActivityChartDetailBinding.inflate(getLayoutInflater());
+        binding = ActivityChartDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         getSupportActionBar().hide();
-        database=FirebaseDatabase.getInstance();
-        auth=FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        auth = FirebaseAuth.getInstance();
 
 
-
-        final String senderId=auth.getUid();
-        String recieveId =getIntent().getStringExtra("userId");
-        String userName=getIntent().getStringExtra("userName");
-        String profilepic =getIntent().getStringExtra("profilePic");
+        final String senderId = auth.getUid();
+        String recieveId = getIntent().getStringExtra("userId");
+        userName= getIntent().getStringExtra("userName");
+        String profilepic = getIntent().getStringExtra("profilePic");
         binding.userName.setText(userName);
-        Picasso.get().load(profilepic).placeholder(R.drawable.avatar).into(binding.profileImage);
+        Picasso.get().load(profilepic).placeholder(R.drawable.baseline_people_24).into(binding.profileImage);
 
         binding.backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(ChartDetailActivity.this,MainActivity.class);
+                Intent intent = new Intent(ChartDetailActivity.this, MainActivity.class);
                 startActivity(intent);
-
-
             }
         });
 
-        final ArrayList< MessageModel> messageModels=new ArrayList<>();
-        final ChatAdapter chatAdapter=new ChatAdapter(messageModels,this,recieveId);
+        final ArrayList<MessageModel> messageModels = new ArrayList<>();
+        final ChatAdapter chatAdapter = new ChatAdapter(messageModels, this, recieveId);
         binding.chatRecyclerView.setAdapter(chatAdapter);
-        LinearLayoutManager layoutManager=new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         binding.chatRecyclerView.setLayoutManager(layoutManager);
 
         final String senderRoom = senderId + recieveId;
-        final  String receiverRoom=recieveId + senderId;
+        final String receiverRoom = recieveId + senderId;
 
         database.getReference().child("chats")
-                        .child(senderRoom)
-                        .addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        messageModels.clear();
-                                        for (DataSnapshot snapshot1:snapshot.getChildren()){
-                                            MessageModel model=snapshot1.getValue(MessageModel.class);
-                                            model.setMessageId(snapshot1.getKey());
-                                            messageModels.add(model);
+                .child(senderRoom)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        messageModels.clear();
+                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                            MessageModel model = snapshot1.getValue(MessageModel.class);
+                            model.setMessageId(snapshot1.getKey());
+                            messageModels.add(model);
 
-                                        }
-                                        chatAdapter.notifyDataSetChanged();
+                        }
+                        chatAdapter.notifyDataSetChanged();
 
-                                    }
+                    }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                                    }
-                        });
+                    }
+                });
 
 
         binding.send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message= binding.enterMessage.getText().toString();
-                final MessageModel model=new MessageModel(senderId,message);
+                String message = binding.enterMessage.getText().toString();
+                final MessageModel model = new MessageModel(senderId, message,userName);
                 model.setTimestamp(new Date().getTime());
                 binding.enterMessage.setText("");
                 database.getReference().child("chats")

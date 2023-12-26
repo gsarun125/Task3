@@ -1,23 +1,28 @@
 package com.example.myapplication.Models;
 
 public class MessageModel {
-    String uId,message,messageId;
+    String uId, message, messageId,UserName;
     Long timestamp;
 
 
-    public MessageModel(String uId, String message, Long timestamp) {
+
+
+
+    public MessageModel(String uId, String message,String userName) {
         this.uId = uId;
         this.message = message;
-        this.timestamp = timestamp;
-
+        this.UserName=userName;
     }
 
-
-    public MessageModel(String uId, String message) {
-        this.uId = uId;
-        this.message = message;
+    public String getUserName() {
+        return UserName;
     }
-    public MessageModel(){
+
+    public void setUserName(String userName) {
+        UserName = userName;
+    }
+
+    public MessageModel() {
 
     }
 
@@ -28,7 +33,9 @@ public class MessageModel {
     public void setuId(String uId) {
         this.uId = uId;
     }
-
+    public void getuId(String uId) {
+        this.uId = uId;
+    }
     public String getMessage() {
         return message;
     }

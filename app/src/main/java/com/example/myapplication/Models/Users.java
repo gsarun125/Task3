@@ -3,6 +3,7 @@ package com.example.myapplication.Models;
 public class Users {
     String profilePic, userName, mail, password, userId, lastMessage, status;
 
+
     public Users() {
 
     }

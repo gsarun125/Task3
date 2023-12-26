@@ -24,9 +24,8 @@ public class ChatAdapter extends RecyclerView.Adapter {
     ArrayList<MessageModel> messageModels;
     Context context;
     String recId;
-    int SENDER_VIEW_TYPE=1;
-    int RECEIVER_VIEW_TYPE=2;
-
+    int SENDER_VIEW_TYPE = 1;
+    int RECEIVER_VIEW_TYPE = 2;
 
 
     public ChatAdapter(ArrayList<MessageModel> messageModels, Context context) {
@@ -44,14 +43,11 @@ public class ChatAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType==SENDER_VIEW_TYPE)
-        {
-            View view= LayoutInflater.from(context).inflate(R.layout.sample_sender,parent,false);
+        if (viewType == SENDER_VIEW_TYPE) {
+            View view = LayoutInflater.from(context).inflate(R.layout.sample_sender, parent, false);
             return new SenderViewHolder(view);
-        }
-        else
-        {
-            View view=LayoutInflater.from(context).inflate(R.layout.sample_reciver,parent,false);
+        } else {
+            View view = LayoutInflater.from(context).inflate(R.layout.sample_reciver, parent, false);
             return new ReciverViewHolder(view);
         }
     }
@@ -59,64 +55,61 @@ public class ChatAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        if(messageModels.get(position).getuId().equals(FirebaseAuth.getInstance().getUid())){
-            return  SENDER_VIEW_TYPE;
-
-        }
-        else {
+        if (messageModels.get(position).getuId().equals(FirebaseAuth.getInstance().getUid())) {
+            return SENDER_VIEW_TYPE;
+        } else {
             return RECEIVER_VIEW_TYPE;
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    MessageModel messageModel=messageModels.get(position);
+        MessageModel messageModel = messageModels.get(position);
 
-    holder.itemView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            new AlertDialog.Builder(context)
-                    .setTitle("Delete")
-                    .setMessage("Are you sure you want to delete this message?")
-                    .setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            FirebaseDatabase database=FirebaseDatabase.getInstance();
-                            String senderRoom = FirebaseAuth.getInstance().getUid() + recId;
-                            database.getReference().child("chats").child(senderRoom)
-                                    .child(messageModel.getMessageId())
-                                    .setValue(null);
-                        }
-                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-
-                    }).show();
-        }
-    });
-
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(context)
+                        .setTitle("Delete")
+                        .setMessage("Are you sure you want to delete this message?")
+                        .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                String senderRoom = FirebaseAuth.getInstance().getUid() + recId;
+                                database.getReference().child("chats").child(senderRoom)
+                                        .child(messageModel.getMessageId())
+                                        .setValue(null);
+                            }
+                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
+            }
+        });
 
 
-        if(holder.getClass()==SenderViewHolder.class)
-        {
-            ((SenderViewHolder)holder).senderMsg.setText(messageModel.getMessage());
-            Date date=new Date(messageModel.getTimestamp());
-            SimpleDateFormat simpleDateFormat= new SimpleDateFormat("dd:MM:yyyy h:mm a");
-            String strDate=simpleDateFormat.format(date);
-            ((SenderViewHolder)holder).senderTime.setText(strDate.toString());
+        if (holder.getClass() == SenderViewHolder.class) {
+            ((SenderViewHolder) holder).senderName.setText(messageModel.getUserName());
+
+            ((SenderViewHolder) holder).senderMsg.setText(messageModel.getMessage());
+            Date date = new Date(messageModel.getTimestamp());
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("h:mm a");
+            String strDate = simpleDateFormat.format(date);
+            ((SenderViewHolder) holder).senderTime.setText(strDate.toString());
 
 
-        }
-        else
-        {
-            ((ReciverViewHolder)holder).receiverMsg.setText(messageModel.getMessage());
+        } else {
+            ((ReciverViewHolder) holder).receiverMsg.setText(messageModel.getMessage());
+            ((ReciverViewHolder) holder).reuserName.setText(messageModel.getUserName());
 
-            Date date=new Date(messageModel.getTimestamp());
-            SimpleDateFormat simpleDateFormat= new SimpleDateFormat("dd:MM:yyyy h:mm a");
-            String strDate=simpleDateFormat.format(date);
-            ((ReciverViewHolder)holder).receiverTime.setText(strDate.toString());
+            Date date = new Date(messageModel.getTimestamp());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("h:mm a");
+            String strDate = simpleDateFormat.format(date);
+            ((ReciverViewHolder) holder).receiverTime.setText(strDate.toString());
         }
     }
 
@@ -127,24 +120,27 @@ public class ChatAdapter extends RecyclerView.Adapter {
         return messageModels.size();
     }
 
-    public class ReciverViewHolder extends RecyclerView.ViewHolder{
-        TextView receiverMsg,receiverTime;
+    public class ReciverViewHolder extends RecyclerView.ViewHolder {
+        TextView receiverMsg, receiverTime,reuserName;
 
         public ReciverViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            receiverMsg=itemView.findViewById(R.id.receiverText);
-            receiverTime=itemView.findViewById(R.id.receiverTime);
-
+            receiverMsg = itemView.findViewById(R.id.receiverText);
+            receiverTime = itemView.findViewById(R.id.receiverTime);
+            reuserName=itemView.findViewById(R.id.reusername);
         }
     }
-    public class SenderViewHolder extends RecyclerView.ViewHolder{
-        TextView senderMsg,senderTime;
+
+    public class SenderViewHolder extends RecyclerView.ViewHolder {
+        TextView senderMsg, senderTime,senderName;
+
         public SenderViewHolder(@NonNull View itemView) {
             super(itemView);
 
             senderMsg = itemView.findViewById(R.id.senderText);
-            senderTime =itemView.findViewById(R.id.senderTime);
+            senderTime = itemView.findViewById(R.id.senderTime);
+            senderName=itemView.findViewById(R.id.susername);
         }
     }
 }

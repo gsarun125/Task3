@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.example.myapplication.Fragments.ChartsFragment;
-
+import com.example.myapplication.Fragments.GroupFragment;
 
 public class FragmentsAdapter extends FragmentPagerAdapter {
 
@@ -18,27 +18,34 @@ public class FragmentsAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-
-        return new ChartsFragment();
-
-
+        // Return the corresponding fragment based on the position
+        switch (position) {
+            case 0:
+                return new ChartsFragment(); // Fragment for "CHATS"
+            case 1:
+                return new GroupFragment(); // Fragment for "GROUP CHARTS"
+            default:
+                return null;
+        }
     }
 
     @Override
     public int getCount() {
-        return 1;
+        // Return the total number of fragments
+        return 2; // Assuming you have two fragments
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        String title =null;
-        if (position==0)
-        {
-            title="CHATS";
+        // Return the title for each tab
+        switch (position) {
+            case 0:
+                return "CHATS";
+            case 1:
+                return "GROUP CHARTS";
+            default:
+                return null;
         }
-            return title;
-
     }
 }
-
