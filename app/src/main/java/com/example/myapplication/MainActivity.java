@@ -13,11 +13,16 @@ import android.widget.Toast;
 import com.example.myapplication.Adapter.FragmentsAdapter;
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
     FirebaseAuth mAuth;
+     public static String  loginuser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +31,31 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         getSupportActionBar().setTitle("Community Chart");
+        String uId= getIntent().getStringExtra("USER_UID");
+        getUserName( uId);
         mAuth = FirebaseAuth.getInstance();
         binding.viewPager.setAdapter(new FragmentsAdapter(getSupportFragmentManager()));
         binding.tabLayout.setupWithViewPager(binding.viewPager);
+
+    }
+    public  void  getUserName( String userUid){
+        FirebaseDatabase.getInstance().getReference().child("Users")
+                .child(userUid )
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.hasChildren()) {
+                            loginuser= snapshot.child("userName").getValue().toString();
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
     }
 
     /**

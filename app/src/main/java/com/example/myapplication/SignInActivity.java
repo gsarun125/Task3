@@ -25,7 +25,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignInActivity extends AppCompatActivity {
     ActivitySignInBinding binding;
@@ -44,23 +47,12 @@ public class SignInActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(SignInActivity.this);
         progressDialog.setTitle("Login");
         progressDialog.setMessage("Validation In Progress");
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleSignINClient = GoogleSignIn.getClient(this, gso);
-
         binding.btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 performSignin();
             }
         });
-        if (mAuth.getCurrentUser() != null) {
-            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-            startActivity(intent);
-
-        }
 
         binding.txtClickSignUP.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,7 +77,11 @@ public class SignInActivity extends AppCompatActivity {
 
                             progressDialog.dismiss();
                             if (task.isSuccessful()) {
+                                // Get the signed-in user's UID
+                                String userUid = FirebaseAuth.getInstance().getUid();
+                                System.out.println(userUid);
                                 Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                intent.putExtra("USER_UID", userUid);
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(SignInActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();

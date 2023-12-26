@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import static com.example.myapplication.MainActivity.loginuser;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,7 +30,7 @@ public class ChartDetailActivity extends AppCompatActivity {
     FirebaseDatabase database;
     FirebaseAuth auth;
 ///
-    public static String userName;
+    public String userName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +93,7 @@ public class ChartDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String message = binding.enterMessage.getText().toString();
-                final MessageModel model = new MessageModel(senderId, message,userName);
+                final MessageModel model = new MessageModel(senderId, message,loginuser);
                 model.setTimestamp(new Date().getTime());
                 binding.enterMessage.setText("");
                 database.getReference().child("chats")

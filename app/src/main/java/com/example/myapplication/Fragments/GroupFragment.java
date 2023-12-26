@@ -1,6 +1,7 @@
 package com.example.myapplication.Fragments;
 
-import static com.example.myapplication.ChartDetailActivity.userName;
+
+import static com.example.myapplication.MainActivity.loginuser;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -75,7 +76,7 @@ public class GroupFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 final String message = binding.enterMessage.getText().toString();
-                final MessageModel model = new MessageModel(senderId, message,userName);
+                final MessageModel model = new MessageModel(senderId, message,loginuser);
                 model.setTimestamp(new Date().getTime());
 
                 binding.enterMessage.setText("");
