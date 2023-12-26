@@ -27,7 +27,7 @@ public class ChartDetailActivity extends AppCompatActivity {
     ActivityChartDetailBinding binding;
     FirebaseDatabase database;
     FirebaseAuth auth;
-
+///
     public static String userName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
